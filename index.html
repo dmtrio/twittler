@@ -1,24 +1,111 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <link rel="stylesheet" type="text/css" href="styles.css">
     <script src="jquery.js"></script>
     <script src="data_generator.js"></script>
+
+<!--
+  Bare Minimum Requirements
+
+  - Show the user new tweets somehow. (You can show them automatically as they're created, or create a button that displays new tweets.)
+
+  - Display the timestamps of when the tweets were created. This timestamp should reflect the actual time the tweets were created, and should not just be hardcoded.
+
+  - Design your interface so that you want to look at and use the product you're making.
+
+  - Allow the user to click on a username to see that user's timeline.
+
+  Advanced
+
+  - Show when the tweets were created in a human-friendly way (eg "10 minutes ago"). You'll want to find and use a library for this.
+
+  - Allow the user to tweet. (This is going to require you to understand a little more about data_generator.js, but you shouldn't need to modify anything.)
+-->
   </head>
   <body>
+    <div>
+      <button>Load New Tweets</button>
+    </div>
+    <div class = "tweetline">
+    </div>
     <script>
 
       $(document).ready(function(){
-        var $body = $('body');
-        $body.html('');
+        var $tweetline = $('.tweetline');
+        var tweetsLoaded = 0;
+        var username;
+        //$body.html('');
 
-        var index = streams.home.length - 1;
-        while(index >= 0){
-          var tweet = streams.home[index];
-          var $tweet = $('<div></div>');
-          $tweet.text('@' + tweet.user + ': ' + tweet.message);
-          $tweet.appendTo($body);
-          index -= 1;
+        //loadTweets function
+          //load tweets in reverse chrono order
+          //iterate with a for loop that counts down from the oldest tweet
+
+        var loadTweets = function(username) {
+          //make universal for tweets of home and user
+          if (username === undefined) {
+            var tweets = streams.home.length - 1;
+            for (var i = tweetsLoaded ; i < tweets; i++) {
+              console.log(tweetsLoaded);
+              var tweetIndex = streams.home[i];
+              constructTweet(tweetIndex).prependTo($tweetline);
+              tweetsLoaded++;
+            };
+          } else {
+            $tweetline.html('');
+            var tweets = streams.users[username].length - 1;
+            console.log(username, tweets);
+            for (var i = 0 ; i < tweets; i++) {
+              var tweetIndex = streams.users[username][i];
+              constructTweet(tweetIndex).prependTo($tweetline);
+
+            console.log('ran');
+            };
+          };
+        };
+
+        // var loadTweets = function(this) {
+        //   //make universal for tweets of home and user
+        //
+        //   var tweets = streams.home.length - 1;
+        //   for(var i = loadedTweets ; i < tweets; i++) {
+        //     var tweetIndex = streams.home[i];
+        //     constructTweet(tweetIndex).prependTo($tweetline);
+        //     loadedTweets = i + 1;
+        //   }
+        // }
+
+        var constructTweet = function(tweetIndex) {
+          var $tweetDiv = $('<div></div>');
+          var $user = $('<a href=# class="username" data-username = ' + tweetIndex.user + '></a>');
+          var $time = $('<h6 class="datePublished"></h6>');
+          var $tweet = $('<p class="tweet"></p>');
+          //return $user.text(tweetIndex.user);
+
+         $user.text(tweetIndex.user).appendTo($tweetDiv);
+         $time.text(tweetIndex.created_at).appendTo($tweetDiv);
+         $tweet.text(tweetIndex.message).appendTo($tweetDiv);
+
+         return $tweetDiv;
+        //  return $tweet.text(tweet.created_at + ' @ ' + tweet.user + ': ' + tweet.message);
         }
+
+        loadTweets();
+
+        $('button').on('click', function(){
+          loadTweets(username);
+          console.log(username);
+        });
+
+        $('.tweetline').on('click', '.username', function(){
+          alert('hi');
+          console.log($(this).data('username'));
+          username = $(this).data('username');
+          loadTweets($(this).data('username'));
+        });
+
+
+        console.log()
 
       });
 
