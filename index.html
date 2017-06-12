@@ -23,92 +23,87 @@
   - Allow the user to tweet. (This is going to require you to understand a little more about data_generator.js, but you shouldn't need to modify anything.)
 -->
   </head>
+
   <body>
-    <div>
-      <button>Load New Tweets</button>
+    <header>
+      <h1>Twittler</h1>
+    </header>
+    <div class="columnDiv">
+      <div id=buttonDiv>
+        <button id="backButton">Back</button>
+        <button id="loadNewTweets">Load New Tweets</button>
+      </div>
+      <div class = "tweetline">
+      </div>
     </div>
-    <div class = "tweetline">
-    </div>
-    <script>
+      <script>
 
-      $(document).ready(function(){
-        var $tweetline = $('.tweetline');
-        var tweetsLoaded = 0;
-        var username;
-        //$body.html('');
+        $(document).ready(function(){
+          var $tweetline = $('.tweetline');
+          var tweetsLoaded = 0;
+          var username;
+          //$body.html('');
 
-        //loadTweets function
-          //load tweets in reverse chrono order
-          //iterate with a for loop that counts down from the oldest tweet
+          //loadTweets function
+            //load tweets in reverse chrono order
+            //iterate with a for loop that counts down from the oldest tweet
 
-        var loadTweets = function(username) {
-          //make universal for tweets of home and user
-          if (username === undefined) {
-            var tweets = streams.home.length - 1;
-            for (var i = tweetsLoaded ; i < tweets; i++) {
-              console.log(tweetsLoaded);
-              var tweetIndex = streams.home[i];
-              constructTweet(tweetIndex).prependTo($tweetline);
-              tweetsLoaded++;
-            };
-          } else {
-            $tweetline.html('');
-            var tweets = streams.users[username].length - 1;
-            console.log(username, tweets);
-            for (var i = 0 ; i < tweets; i++) {
-              var tweetIndex = streams.users[username][i];
-              constructTweet(tweetIndex).prependTo($tweetline);
-
-            console.log('ran');
+          var loadTweets = function(username) {
+            //make universal for tweets of home and user
+            if (username === undefined) {
+              var tweets = streams.home.length - 1;
+              for (var i = tweetsLoaded ; i < tweets; i++) {
+                var tweetIndex = streams.home[i];
+                constructTweet(tweetIndex).prependTo($tweetline);
+                tweetsLoaded++;
+              };
+            } else {
+              $tweetline.html('');
+              var tweets = streams.users[username].length - 1;
+              for (var i = 0 ; i < tweets; i++) {
+                var tweetIndex = streams.users[username][i];
+                constructTweet(tweetIndex).prependTo($tweetline);
+              };
             };
           };
-        };
 
-        // var loadTweets = function(this) {
-        //   //make universal for tweets of home and user
-        //
-        //   var tweets = streams.home.length - 1;
-        //   for(var i = loadedTweets ; i < tweets; i++) {
-        //     var tweetIndex = streams.home[i];
-        //     constructTweet(tweetIndex).prependTo($tweetline);
-        //     loadedTweets = i + 1;
-        //   }
-        // }
+          var constructTweet = function(tweetIndex) {
+            var $tweetDiv = $('<div></div>');
+            var $user = $('<a href=# class="username" data-username = ' + tweetIndex.user + '></a>');
+            var $time = $('<h6 class="datePublished"></h6>');
+            var $tweet = $('<p class="tweet"></p>');
+            //return $user.text(tweetIndex.user);
 
-        var constructTweet = function(tweetIndex) {
-          var $tweetDiv = $('<div></div>');
-          var $user = $('<a href=# class="username" data-username = ' + tweetIndex.user + '></a>');
-          var $time = $('<h6 class="datePublished"></h6>');
-          var $tweet = $('<p class="tweet"></p>');
-          //return $user.text(tweetIndex.user);
+           $user.text(tweetIndex.user).appendTo($tweetDiv);
+           $time.text(tweetIndex.created_at).appendTo($tweetDiv);
+           $tweet.text(tweetIndex.message).appendTo($tweetDiv);
 
-         $user.text(tweetIndex.user).appendTo($tweetDiv);
-         $time.text(tweetIndex.created_at).appendTo($tweetDiv);
-         $tweet.text(tweetIndex.message).appendTo($tweetDiv);
+           return $tweetDiv;
+          //  return $tweet.text(tweet.created_at + ' @ ' + tweet.user + ': ' + tweet.message);
+          }
 
-         return $tweetDiv;
-        //  return $tweet.text(tweet.created_at + ' @ ' + tweet.user + ': ' + tweet.message);
-        }
+          loadTweets();
 
-        loadTweets();
+          $('#loadNewTweets').on('click', function(){
+            loadTweets(username);
+          });
 
-        $('button').on('click', function(){
-          loadTweets(username);
-          console.log(username);
+          $('#backButton').on('click', function(){
+            username = undefined;
+            tweetsLoaded = 0;
+            loadTweets(username);
+          });
+
+          $('.tweetline').on('click', '.username', function(){
+            username = $(this).data('username');
+            loadTweets($(this).data('username'));
+          });
+
+
+          console.log()
+
         });
 
-        $('.tweetline').on('click', '.username', function(){
-          alert('hi');
-          console.log($(this).data('username'));
-          username = $(this).data('username');
-          loadTweets($(this).data('username'));
-        });
-
-
-        console.log()
-
-      });
-
-    </script>
+      </script>
   </body>
 </html>
