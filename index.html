@@ -44,8 +44,6 @@
           var username;
           var tweets;
 
-
-
            $('#backButton').hide();
            $('#loadNewTweets').hide();
 
@@ -90,7 +88,7 @@
             //return $user.text(tweetIndex.user);
 
             console.log(tweetIndex.created_at, Date.now() - tweetIndex.created_at);
-           $user.text(tweetIndex.user).appendTo($tweetDiv);
+           $user.text('@' + tweetIndex.user).appendTo($tweetDiv);
            $time.text(timeSinceTweet(tweetIndex.created_at)).appendTo($tweetDiv);
            $tweet.text(tweetIndex.message).appendTo($tweetDiv);
 
