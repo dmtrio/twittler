@@ -21,6 +21,10 @@ a {
   text-decoration: none;
 }
 
+a:hover {
+  color: #e1681c;
+}
+
 header {
   height: 140px;
   background-color: #e1681c;
@@ -72,7 +76,6 @@ body {
 .datePublished {
   position: relative;
   right: 0px;
-  /* float: right; */
   margin: 0px;
 }
 
@@ -84,6 +87,7 @@ body {
 }
 
 #buttonDiv {
+  height: 40px;
   margin-top: 15px;
 }
 
@@ -96,9 +100,12 @@ button {
   width: 200px;
   margin: auto;
   display: block;
+
 }
 
 #backButton{
   width: 50px;
   position: absolute;
+  display: block;
+
 }

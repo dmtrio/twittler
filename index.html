@@ -42,28 +42,43 @@
           var $tweetline = $('.tweetline');
           var tweetsLoaded = 0;
           var username;
-          //$body.html('');
+          var tweets;
 
-          //loadTweets function
-            //load tweets in reverse chrono order
-            //iterate with a for loop that counts down from the oldest tweet
+
+
+           $('#backButton').hide();
+           $('#loadNewTweets').hide();
+
+          var checkForNewTweets = function(){
+            if (username === undefined) {
+              tweets = streams.home.length - 1;
+            } else {
+              tweets = streams.users[username].length - 1;
+            };
+            if (tweets > tweetsLoaded){
+              $('#loadNewTweets').show();
+            }
+          }
 
           var loadTweets = function(username) {
-            //make universal for tweets of home and user
+            $('#loadNewTweets').hide();
+            $tweetline.html('');
+            tweetsLoaded = 0;
+
+            var tweetArray = [];
+
             if (username === undefined) {
-              var tweets = streams.home.length - 1;
-              for (var i = tweetsLoaded ; i < tweets; i++) {
-                var tweetIndex = streams.home[i];
-                constructTweet(tweetIndex).prependTo($tweetline);
-                tweetsLoaded++;
-              };
+              $('#backButton').hide();
+              tweetArray = streams.home;
+              tweets = streams.home.length - 1;
             } else {
-              $tweetline.html('');
-              var tweets = streams.users[username].length - 1;
-              for (var i = 0 ; i < tweets; i++) {
-                var tweetIndex = streams.users[username][i];
-                constructTweet(tweetIndex).prependTo($tweetline);
-              };
+              $('#backButton').show();
+              tweetArray = streams.users[username];
+              tweeta = streams.users[username].length - 1;
+            };
+            for (var i = 0 ; i < tweets; i++) {
+              constructTweet(tweetArray[i]).prependTo($tweetline);
+              tweetsLoaded++;
             };
           };
 
@@ -74,15 +89,35 @@
             var $tweet = $('<p class="tweet"></p>');
             //return $user.text(tweetIndex.user);
 
+            console.log(tweetIndex.created_at, Date.now() - tweetIndex.created_at);
            $user.text(tweetIndex.user).appendTo($tweetDiv);
-           $time.text(tweetIndex.created_at).appendTo($tweetDiv);
+           $time.text(timeSinceTweet(tweetIndex.created_at)).appendTo($tweetDiv);
            $tweet.text(tweetIndex.message).appendTo($tweetDiv);
 
            return $tweetDiv;
-          //  return $tweet.text(tweet.created_at + ' @ ' + tweet.user + ': ' + tweet.message);
-          }
+         };
+
+          var timeSinceTweet = function(created_at) {
+            var createdMsAgo = Date.now() - created_at;
+            if (createdMsAgo <= 1000) {
+              return 'Just now'
+            } else if (1000 <= createdMsAgo && createdMsAgo <  60000) {
+              return Math.floor(createdMsAgo / 1000) + ' seconds ago'
+            } else if (60000 <= createdMsAgo && createdMsAgo <  3600000) {
+              return Math.floor(createdMsAgo / 60000) + ' minutes ago'
+            } else if (3600000 <= createdMsAgo && createdMsAgo <  216000000) {
+              return Math.floor(createdMsAgo / 3600000) + ' hours ago'
+            } else {
+              var month = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "November", "December"];
+              return month[created_at.getMonth()] + ' ' + created_at.getDay() +', '+ created_at.getFullYear();
+            }
+          };
+
+          //console.log(tweetIndex.created_at, tweetIndex.created_at - 1000);
 
           loadTweets();
+
+          setInterval(checkForNewTweets, 5000);
 
           $('#loadNewTweets').on('click', function(){
             loadTweets(username);
@@ -94,13 +129,11 @@
             loadTweets(username);
           });
 
-          $('.tweetline').on('click', '.username', function(){
+          $('.tweetline').on('click', '.username', function(event){
+            event.preventDefault();
             username = $(this).data('username');
-            loadTweets($(this).data('username'));
+            loadTweets(username);
           });
-
-
-          console.log()
 
         });
 
